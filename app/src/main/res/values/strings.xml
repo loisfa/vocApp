@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">vocApp</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="debug_text">Your debug</string>
+    <string name="your_text"></string>
+    <string name="guess_text">Guess</string>
+    <string name="edit_text">Edit text</string>
+    <string name="action_settings">Settings</string>
+    <string name="latinToCyrilSingleLetter">A>А,a>а,B>Б,b>б,V>В,v>в,G>Г,g>г,D>Д,d>д,E>Е,e>е,J>Ж,j>ж,Z>З,z>з,Y>И,y>и,Ÿ>Й,ÿ>й,K>К,k>к,L>Л,l>л,M>М,m>м,N>Н,n>н,O>О,o>о,P>П,p>п,R>Р,r>р,S>С,s>с,T>Т,t>т,U>У,u>у,F>Ф,f>ф,X>Х,x>х,H>Ъ,h>ъ,I>Ы,i>ы,É>Э,é>э</string>
+    <string name="latinToCyrilMutlipleLetters">IO>Ё,io>ё,TS>Ц,ts>ц,TCH>Ч,tch>ч,SH>Ш,sh>ш,SCH>Щ,sch>щ,HH>Ь,hh>ь,IU>Ю,iu>ю,IA>Я,ia>я,yy>ий,iy>ый, hh>ь,</string>
+</resources>
