@@ -1,13 +1,18 @@
 package loisfa.vocapp;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -15,51 +20,48 @@ import loisfa.vocapp.R;
 
 public class MenuActivity extends AppCompatActivity {
 
-    ImageButton fraLangImageButton;
-    ImageButton rusLangImageButton;
-    ArrayList<ImageButton> listImageButtons;
-    ImageButton buttonPressed;
-    ImageButton buttonReleased;
+   // ImageButton fraLangImageButton;
+    //ImageButton rusLangImageButton;
+    LinearLayout fraToRusLayout;
+    LinearLayout rusToFraLayout;
+
+
+    public static final String EXTRA_LANGUAGE= "loisfa.vocapp.LANGUAGE";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        fraLangImageButton = (ImageButton) findViewById(R.id.button_fra);
-        listImageButtons.add(fraLangImageButton);
-        rusLangImageButton = (ImageButton) findViewById(R.id.button_rus);
-        listImageButtons.add(rusLangImageButton);
+        //fraLangImageButton = (ImageButton) findViewById(R.id.button_fra);
+        //rusLangImageButton = (ImageButton) findViewById(R.id.button_rus);
+        fraToRusLayout = (LinearLayout) findViewById(R.id.linearLayout_fraToRus);
+        rusToFraLayout = (LinearLayout) findViewById(R.id.linearLayout_rusToFra);
 
-        for (final ImageButton langButton:listImageButtons) {
-            langButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        // Pressed
-                        buttonPressed = langButton;
-                        langButton.setImageDrawable();
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        // Released
-                        buttonReleased = langButton;
-                        checkLangForActivity();
-                    }
-                    return true;
-                }
-            });
-        }
+        fraToRusLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                launchMainActivity("fra", "rus");
+            }
+        });
+
+        rusToFraLayout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                launchMainActivity("rus", "fra");
+            }
+        });
+
     }
 
-    private void checkLangForActivity() {
-        if (buttonPressed == fraLangImageButton && buttonReleased == rusLangImageButton) {
-
-        } else if (buttonPressed == rusLangImageButton && buttonReleased == fraLangImageButton) {
-
-        }
-
-        buttonPressed = null;
-        buttonReleased = null;
+    private void launchMainActivity(String langBeg, String langEnd) {
+        Log.d("mytag", "in launchMainActivity()");
+        Intent intent = new Intent(this, MainActivity.class);
+        String languages = langBeg + "->" + langEnd;
+        intent.putExtra(EXTRA_LANGUAGE, languages);
+        startActivity(intent);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,6 +1,7 @@
 package loisfa.vocapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,9 +31,11 @@ public class MainActivity extends AppCompatActivity {
     private String wholeTextFile = "";
     WordAndTranslations word;
     DicoWordsAndTranslations dico;
+    private String languages;
 
     //private TextView debugView;
     //private String debugString;
+    private boolean russianKeyboard;
 
     HashMap<String, String> latinToCyrilMapSingleLetter = new HashMap<String, String>();
     HashMap<String, String> latinToCyrilMapMultipleLetters = new HashMap<String, String>();
@@ -43,16 +46,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get the Intent that started this activity and extract the string
+        Intent intent = getIntent();
+        this.languages = intent.getStringExtra(MenuActivity.EXTRA_LANGUAGE);
 
-        initLatinToCyrilMaps();
+        if ((languages.split("->")[1]).equals("rus") ) {
+            russianKeyboard = true;
+            initLatinToCyrilMaps();
+        } else {
+            russianKeyboard = false;
+        }
 
         nextWordButton = (Button) findViewById(R.id.button_next_word);
         editText = (EditText)findViewById(R.id.edit_message);
-        //debugView = (TextView)findViewById(R.id.your_debug_view);
-        //debugString = "";
         resultWordTextView = (TextView)findViewById(R.id.your_text_view);
         toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
         context = getApplicationContext();
+
         try {
             TxtFileReader txtFileReader = new TxtFileReader(FILENAME, context);
             wholeTextFile = txtFileReader.getRawText();
@@ -78,9 +88,16 @@ public class MainActivity extends AppCompatActivity {
                                       int before, int count) {
 
                 if (s.length()!=0) {
-                    resultWordTextView.setText(translateLatinToCyrilSequence(s));
+                    CharSequence text;
+                    if (russianKeyboard) {
+                        text = translateLatinToCyrilSequence(s);
+                        translateLatinToCyrilSequence(s);
+                    } else {
+                        text = s;
+                    }
+                    resultWordTextView.setText(text);
                     resultWordTextView.setTextColor(Color.BLACK);
-                    checksEqualsWordTranslation(translateLatinToCyrilSequence(s));
+                    checksEqualsWordTranslation(text);
                 }
 
             }
@@ -106,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
         }
-        word = dico.getAleaWordFraToRus();
+        Log.d("mytag", "this.languages: "+this.languages);
+        word = dico.getAleaWordFromTo(this.languages);
+        Log.d("mytag", "word: "+word);
         toGuessWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
         editText.setText("");
     }
@@ -120,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
             gameNextWord(true);
         }
     }
-
     private void initLatinToCyrilMaps() {
         initLatinToCyrilSingleLetterMap();
         initLatinToCyrilMultipleLettersMap();

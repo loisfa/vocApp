@@ -42,16 +42,17 @@ public class DicoWordsAndTranslations {
         listWordsRusToFra.addWord(transAndWord);
     }
 
-    public WordAndTranslations getAleaWordFraToRus() {
+    public WordAndTranslations getAleaWordFromTo(String languages) {
         double alea = Math.random();
-        WordAndTranslations word = listWordsFraToRus.getWord((int) Math.floor(alea * listWordsFraToRus.size()));
-        return word;
-    }
+        WordAndTranslations word = null;
 
+        if (languages.equals("fra->rus")) {
+            word = listWordsFraToRus.getWord((int) Math.floor(alea * listWordsFraToRus.size()));
 
-    public WordAndTranslations getAleaWordRusToFra() {
-        double alea = Math.random();
-        WordAndTranslations word = listWordsRusToFra.getWord((int) Math.floor(alea * listWordsRusToFra.size()));
+        } else if (languages.equals("rus->fra")) {
+            word = listWordsRusToFra.getWord((int) Math.floor(alea * listWordsRusToFra.size()));
+
+        }
         return word;
     }
 }
