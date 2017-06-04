@@ -18,10 +18,10 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button buttonNextWord;
+    private Button nextWordButton;
     private EditText editText;
-    private TextView yourTextView;
-    private TextView toGuessView;
+    private TextView resultWordTextView;
+    private TextView toGuessWordTextView;
     private String rawTextLatinToCyrilSingleLetter;
     private String rawTextLatinToCyrilMultipleLetters;
 
@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
 
         initLatinToCyrilMaps();
 
-        buttonNextWord = (Button) findViewById(R.id.button_next_word);
+        nextWordButton = (Button) findViewById(R.id.button_next_word);
         editText = (EditText)findViewById(R.id.edit_message);
         //debugView = (TextView)findViewById(R.id.your_debug_view);
         //debugString = "";
-        yourTextView = (TextView)findViewById(R.id.your_text_view);
-        toGuessView = (TextView)findViewById(R.id.guess_text_view);
+        resultWordTextView = (TextView)findViewById(R.id.your_text_view);
+        toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
         context = getApplicationContext();
         try {
             TxtFileReader txtFileReader = new TxtFileReader(FILENAME, context);
@@ -78,15 +78,15 @@ public class MainActivity extends AppCompatActivity {
                                       int before, int count) {
 
                 if (s.length()!=0) {
-                    yourTextView.setText(translateLatinToCyrilSequence(s));
-                    yourTextView.setTextColor(Color.BLACK);
+                    resultWordTextView.setText(translateLatinToCyrilSequence(s));
+                    resultWordTextView.setTextColor(Color.BLACK);
                     checksEqualsWordTranslation(translateLatinToCyrilSequence(s));
                 }
 
             }
         });
 
-        buttonNextWord.setOnClickListener(new View.OnClickListener() {
+        nextWordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 gameNextWord(false);
@@ -101,12 +101,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void gameNextWord(boolean hasWon) {
         if (hasWon) {
-            yourTextView.setTextColor(Color.rgb(0, 255, 0));
+            resultWordTextView.setTextColor(Color.rgb(0, 255, 0));
+            resultWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
         } else {
-            yourTextView.setTextColor(Color.rgb(255, 0, 0));
+            resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
         }
         word = dico.getAleaWordFraToRus();
-        toGuessView.setText(word.getWord() + " -> " + word.getTranslations());
+        toGuessWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
         editText.setText("");
     }
 
