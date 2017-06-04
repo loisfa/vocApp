@@ -1,4 +1,4 @@
-package maps.maps.tom.vocapp;
+package loisfa.vocapp;
 
 
 import java.util.ArrayList;

@@ -1,11 +1,7 @@
-package maps.maps.tom.vocapp;
+package loisfa.vocapp;
 
 
-import android.os.Debug;
 import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by tom on 21/05/17.
