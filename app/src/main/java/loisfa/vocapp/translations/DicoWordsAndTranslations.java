@@ -1,4 +1,4 @@
-package loisfa.vocapp;
+package loisfa.vocapp.translations;
 
 
 import android.util.Log;

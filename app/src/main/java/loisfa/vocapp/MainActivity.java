@@ -15,7 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.HashMap;
+import loisfa.vocapp.translations.DicoWordsAndTranslations;
+import loisfa.vocapp.translations.WordAndTranslations;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,22 +24,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private TextView resultWordTextView;
     private TextView toGuessWordTextView;
-    private String rawTextLatinToCyrilSingleLetter;
-    private String rawTextLatinToCyrilMultipleLetters;
+
 
     private Context context;
-    private String FILENAME = "textFile.txt";
-    private String wholeTextFile = "";
-    WordAndTranslations word;
+
+    private String FILENAME_DICO_FRA_TO_RUSSIAN = "vocFraToRus.txt";
+    private String dicoRawText = null;
     DicoWordsAndTranslations dico;
-    private String languages;
+    WordAndTranslations word;
 
-    //private TextView debugView;
-    //private String debugString;
-    private boolean russianKeyboard;
+    String languages;
+    private boolean cyrilToLatinTextEntry;
 
-    HashMap<String, String> latinToCyrilMapSingleLetter = new HashMap<String, String>();
-    HashMap<String, String> latinToCyrilMapMultipleLetters = new HashMap<String, String>();
+    LatinToCyrilConverter converter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,26 +45,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-        this.languages = intent.getStringExtra(MenuActivity.EXTRA_LANGUAGE);
-
-        if ((languages.split("->")[1]).equals("rus") ) {
-            russianKeyboard = true;
-            initLatinToCyrilMaps();
-        } else {
-            russianKeyboard = false;
-        }
-
         nextWordButton = (Button) findViewById(R.id.button_next_word);
         editText = (EditText)findViewById(R.id.edit_message);
         resultWordTextView = (TextView)findViewById(R.id.your_text_view);
         toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
         context = getApplicationContext();
 
+
+        Intent intent = getIntent();
+        this.languages = intent.getStringExtra(MenuActivity.EXTRA_LANGUAGE);
+        initLanguageTextEntry(this.languages);
+
         try {
-            TxtFileReader txtFileReader = new TxtFileReader(FILENAME, context);
-            wholeTextFile = txtFileReader.getRawText();
+            TxtFileReader txtFileReader = new TxtFileReader(FILENAME_DICO_FRA_TO_RUSSIAN, context);
+            dicoRawText = txtFileReader.getRawText();
         } catch (Exception e) {
             editText.setText("did not load the file properly not work");
         }
@@ -84,16 +77,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start,
+            public void onTextChanged(CharSequence charSequence, int start,
                                       int before, int count) {
 
-                if (s.length()!=0) {
+                if (charSequence.length()!=0) {
                     CharSequence text;
-                    if (russianKeyboard) {
-                        text = translateLatinToCyrilSequence(s);
-                        translateLatinToCyrilSequence(s);
+                    if (cyrilToLatinTextEntry) {
+                        Log.d("mytag", "charSequence: " + charSequence);
+                        Log.d("mytag", "converter: " + converter);
+                        text = converter.translateLatinToCyrilSequence(charSequence);
                     } else {
-                        text = s;
+                        text = charSequence;
                     }
                     resultWordTextView.setText(text);
                     resultWordTextView.setTextColor(Color.BLACK);
@@ -111,8 +105,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initLanguageTextEntry(String languages) {
+        Log.d("mytag", "languages: "+languages);
+
+        if ((languages.split("->")[1]).equals("rus") ) {
+            Log.d("mytag", "inif");
+
+            cyrilToLatinTextEntry = true;
+            try {
+                converter = new LatinToCyrilConverter(context);
+            } catch (Exception e) {
+                Log.d("mytag", e.toString());
+            }
+        } else {
+            Log.d("mytag", "inelse");
+            cyrilToLatinTextEntry = false;
+        }
+    }
+
     private void initGame() {
-        dico = new DicoWordsAndTranslations(wholeTextFile);
+        dico = new DicoWordsAndTranslations(dicoRawText);
         gameNextWord(false);
     }
 
@@ -123,13 +135,10 @@ public class MainActivity extends AppCompatActivity {
         } else {
             resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
         }
-        Log.d("mytag", "this.languages: "+this.languages);
         word = dico.getAleaWordFromTo(this.languages);
-        Log.d("mytag", "word: "+word);
         toGuessWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
         editText.setText("");
     }
-
 
     private void checksEqualsWordTranslation(CharSequence typedWord) {
         String stringTypedWord = typedWord.toString();
@@ -139,90 +148,8 @@ public class MainActivity extends AppCompatActivity {
             gameNextWord(true);
         }
     }
-    private void initLatinToCyrilMaps() {
-        initLatinToCyrilSingleLetterMap();
-        initLatinToCyrilMultipleLettersMap();
-    }
-
-    private void initLatinToCyrilSingleLetterMap() {
-        this.rawTextLatinToCyrilSingleLetter = getString(R.string.latinToCyrilSingleLetter);
-        String mystring = "";
-        String[] latinToCyrilCouples = this.rawTextLatinToCyrilSingleLetter.split(",");
-        for (int i=0; i<latinToCyrilCouples.length; i++) {
-            String[] latinToCyrilCouple = latinToCyrilCouples[i].split(">");
-            this.latinToCyrilMapSingleLetter.put(latinToCyrilCouple[0], latinToCyrilCouple[1]);
-        }
-    }
 
 
-    private void initLatinToCyrilMultipleLettersMap() {
-        this.rawTextLatinToCyrilMultipleLetters = getString(R.string.latinToCyrilMutlipleLetters);
-        String mystring = "";
-        String[] latinToCyrilCouples = this.rawTextLatinToCyrilMultipleLetters.split(",");
-        for (int i=0; i<latinToCyrilCouples.length; i++) {
-            String[] latinToCyrilCouple = latinToCyrilCouples[i].split(">");
-            this.latinToCyrilMapMultipleLetters.put(latinToCyrilCouple[0], latinToCyrilCouple[1]);
-        }
-    }
-
-
-    private CharSequence translateLatinToCyrilSequence(CharSequence latinCharSequence) {
-
-        CharSequence newLatinCharSequence = translateLatinToCyrilMultipleLetters(latinCharSequence);
-        CharSequence finalLatinCharSequence = translateLatinToCyrilSingleLetter(newLatinCharSequence);
-
-
-        return finalLatinCharSequence;
-    }
-
-    private CharSequence translateLatinToCyrilMultipleLetters(CharSequence latinCharSequence) {
-
-        String latinString = (String) latinCharSequence.toString();
-        String newLatinString = latinString;
-
-        int maxLengthLatinMultipleLetters = 4; // could be fixed automatically
-        int actualMaxLength;
-
-        for (int i=0; i<latinString.length(); i++) {
-            actualMaxLength = Math.min(maxLengthLatinMultipleLetters, latinString.length()-i);
-            String maxLengthString = latinString.substring(i,i+actualMaxLength);
-
-            for(int chunckSize=1; chunckSize<=actualMaxLength; chunckSize++) {
-                String chunck = maxLengthString.substring(0, chunckSize);
-
-                if (latinToCyrilMapMultipleLetters.containsKey(chunck)) {
-
-                    newLatinString = newLatinString.replace(chunck, latinToCyrilMapMultipleLetters.get(chunck));
-                }
-            }
-        }
-
-        return (CharSequence) newLatinString;
-    }
-
-
-    private CharSequence translateLatinToCyrilSingleLetter(CharSequence latinCharSequence) {
-        String cyrilCharSequence = "";
-        char cyrilChar;
-
-        for (char latinChar: (latinCharSequence.toString()).toCharArray()) {
-            cyrilChar = latinToCyrilChar(latinChar);
-            cyrilCharSequence += String.valueOf(cyrilChar);
-        }
-
-        return (CharSequence) cyrilCharSequence;
-    }
-
-    private char latinToCyrilChar(char latinChar) {
-        char cyrilChar;
-        if (latinToCyrilMapSingleLetter.get(String.valueOf(latinChar)) != null) {
-            cyrilChar = latinToCyrilMapSingleLetter.get(String.valueOf(latinChar)).charAt(0);
-        } else {
-            cyrilChar = latinChar;
-        }
-
-        return cyrilChar;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

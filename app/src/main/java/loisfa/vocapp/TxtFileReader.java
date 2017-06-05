@@ -30,10 +30,10 @@ public class TxtFileReader {
             //this.fileReader = new FileReader(fileName);
             this.bufferedReader = new BufferedReader(
                     new InputStreamReader(context.getAssets().open(fileName)));
-            Log.d("mytag", "construction ok");
+            Log.d("mytag", "txtFileReader construction ok");
         } catch (Exception e) {
-
-            Log.d("mytag", "construction not ok");
+            Log.d("mytag", "txtFileReader construction not ok");
+            Log.d("mytag", e.toString());
         }
     }
 
