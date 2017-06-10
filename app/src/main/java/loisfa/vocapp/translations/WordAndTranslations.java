@@ -41,6 +41,18 @@ public class WordAndTranslations {
         return this.translations;
     }
 
+    public String getStringTranslations() {
+        String res = "";
+        for (int i=0; i<this.translations.size(); i++) {
+            res += this.translations.get(i);
+
+            if (i<this.translations.size() - 1) {
+                res += " | ";
+            }
+        }
+        return res;
+    }
+
     public String getWord() {
         return this.word;
     }

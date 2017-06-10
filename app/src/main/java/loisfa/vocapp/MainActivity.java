@@ -8,11 +8,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,20 +31,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private TextView resultWordTextView;
     private TextView toGuessWordTextView;
+    private ListView listViewPreviousWords;
     private Context context;
 
     private String FILENAME_DICO_FRA_TO_RUSSIAN = "vocFraToRus.txt";
     private String dicoRawText = null;
     private DicoWordsAndTranslations dico;
     private WordAndTranslations word;
-    private ArrayList<WordAndTranslations> historyWords;
     private LatinToCyrilConverter converter;
 
     private String languages;
     private boolean cyrilToLatinTextEntry;
 
-    private adapter;
-
+    private ArrayList<String> historyWords;
+    private ArrayAdapter<String> listAdapter;
 
 
     @Override
@@ -50,10 +55,46 @@ public class MainActivity extends AppCompatActivity {
 
         nextWordButton = (Button) findViewById(R.id.button_next_word);
         editText = (EditText)findViewById(R.id.edit_message);
-        resultWordTextView = (TextView)findViewById(R.id.your_text_view);
+        resultWordTextView = (TextView)findViewById(R.id.result_text_view);
         toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
+        listViewPreviousWords = (ListView)findViewById(R.id.list_view_previous_words);
         context = getApplicationContext();
+        historyWords = new ArrayList<String>();
+        listAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, historyWords) {
+            @Override
+            public View getView ( int position, View convertView, ViewGroup parent){
 
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setTextSize(14f);
+                textView.setPadding(0, 0, 0, 0);
+                textView.setGravity(Gravity.CENTER);
+                String rawText = (String) textView.getText();
+                String result = rawText.split(":")[0];
+                String text = rawText.split(":")[1];
+
+                if (result.equals("WON")) {
+                    textView.setTextColor(Color.GREEN);
+                    textView.setText(text);
+                } else if (result.equals("ERR"))  {
+                    textView.setTextColor(Color.RED);
+                    textView.setText(text);
+                }
+                if (position==historyWords.size()-1) {
+                    textView.setAlpha(1f);
+                } else {
+                    textView.setAlpha(0.3f);
+                }
+
+                return view;
+            }
+        };
+        historyWords.add("WON: essai0");
+        listAdapter.notifyDataSetChanged();
+        listViewPreviousWords.setAdapter(listAdapter);
+        historyWords.add("ERR: essai1");
+        listAdapter.notifyDataSetChanged();
 
         Intent intent = getIntent();
         this.languages = intent.getStringExtra(MenuActivity.EXTRA_LANGUAGE);
@@ -83,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int start,
                                       int before, int count) {
 
+                Log.d("mytag", "charSequence: " + charSequence);
                 if (charSequence.length()!=0) {
                     CharSequence text;
                     if (cyrilToLatinTextEntry) {
@@ -93,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                         text = charSequence;
                     }
                     resultWordTextView.setText(text);
-                    resultWordTextView.setTextColor(Color.BLACK);
                     checksEqualsWordTranslation(text);
                 }
 
@@ -104,15 +145,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 gameNextWord(false);
+                resultWordTextView.setText("");
             }
         });
     }
 
     private void initLanguageTextEntry(String languages) {
-        Log.d("mytag", "languages: "+languages);
 
         if ((languages.split("->")[1]).equals("rus") ) {
-            Log.d("mytag", "inif");
 
             cyrilToLatinTextEntry = true;
             try {
@@ -121,25 +161,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("mytag", e.toString());
             }
         } else {
-            Log.d("mytag", "inelse");
             cyrilToLatinTextEntry = false;
         }
     }
 
     private void initGame() {
         dico = new DicoWordsAndTranslations(dicoRawText);
-        gameNextWord(false);
+        generateWord();
     }
 
     private void gameNextWord(boolean hasWon) {
         if (hasWon) {
-            resultWordTextView.setTextColor(Color.rgb(0, 255, 0));
-            resultWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
+            //resultWordTextView.setTextColor(Color.rgb(0, 255, 0));
+            //resultWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
+            historyWords.add("WON: " + word.getWord() + " -> " + word.getStringTranslations());
+            listAdapter.notifyDataSetChanged();
+
         } else {
-            resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
+            //resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
+            historyWords.add("ERR: " + word.getWord() + " -> " + word.getStringTranslations());
+            listAdapter.notifyDataSetChanged();
         }
+        generateWord();
+    }
+
+    private void generateWord() {
         word = dico.getAleaWordFromTo(this.languages);
-        toGuessWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
+        toGuessWordTextView.setText(word.getWord());
         editText.setText("");
     }
 
