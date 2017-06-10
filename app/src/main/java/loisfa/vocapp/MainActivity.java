@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import loisfa.vocapp.translations.DicoWordsAndTranslations;
 import loisfa.vocapp.translations.WordAndTranslations;
 
@@ -24,19 +26,20 @@ public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private TextView resultWordTextView;
     private TextView toGuessWordTextView;
-
-
     private Context context;
 
     private String FILENAME_DICO_FRA_TO_RUSSIAN = "vocFraToRus.txt";
     private String dicoRawText = null;
-    DicoWordsAndTranslations dico;
-    WordAndTranslations word;
+    private DicoWordsAndTranslations dico;
+    private WordAndTranslations word;
+    private ArrayList<WordAndTranslations> historyWords;
+    private LatinToCyrilConverter converter;
 
-    String languages;
+    private String languages;
     private boolean cyrilToLatinTextEntry;
 
-    LatinToCyrilConverter converter;
+    private adapter;
+
 
 
     @Override

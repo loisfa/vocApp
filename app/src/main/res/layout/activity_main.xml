@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -11,52 +11,69 @@
     tools:context=".MainActivity">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="400px">
+
+        <ListView android:id="@+id/list_view_previous_words"
+            android:textSize="58px"
+            android:text="@string/result_text"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+
+    </LinearLayout>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
-
-        <Button
+        <!--
+        <TextView
             android:id="@+id/button_previous_word"
-            android:text="&lt;"
             android:textSize="72px"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"/>
+        -->
 
-        <TextView android:id="@+id/guess_text_view"
-            android:textSize="58px"
-            android:layout_weight="1"
-            android:text="@string/guess_text"
-            android:textAlignment="center"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" />
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView android:id="@+id/guess_text_view"
+                android:textSize="58px"
+                android:layout_weight="1"
+                android:text="@string/guess_text"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+            <EditText android:id="@+id/edit_message"
+                android:textSize="96px"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_text"
+                android:gravity="left"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/button_next_word"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
             android:text=">"
-            android:textSize="48px"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:textSize="48px"/>
+
+
     </LinearLayout>
 
-   <TextView android:id="@+id/your_text_view"
-       android:textSize="58px"
-       android:text="@string/your_text"
-       android:textAlignment="center"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:gravity="center" />
 
-    <EditText android:id="@+id/edit_message"
-         android:textSize="96px"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:hint="@string/edit_text"
-         android:gravity="left"/>
 
 </LinearLayout>

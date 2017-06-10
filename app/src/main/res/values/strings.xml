@@ -2,7 +2,7 @@
     <string name="app_name">VocApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="debug_text">Your debug</string>
-    <string name="your_text">result</string>
+    <string name="result_text">result1\nresult1\nresult1\nresult1\nresult1\n</string>
     <string name="guess_text">Guess</string>
     <string name="edit_text">Edit text</string>
     <string name="action_settings">Settings</string>
