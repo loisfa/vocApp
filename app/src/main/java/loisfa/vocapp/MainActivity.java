@@ -2,6 +2,7 @@ package loisfa.vocapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +17,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import loisfa.vocapp.translations.DicoWordsAndTranslations;
 import loisfa.vocapp.translations.WordAndTranslations;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultWordTextView;
     private TextView toGuessWordTextView;
     private ListView listViewPreviousWords;
+    private GridView gridViewVocThemes;
     private Context context;
 
     private String FILENAME_DICO_FRA_TO_RUSSIAN = "vocFraToRus.txt";
@@ -46,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> historyWords;
     private ArrayAdapter<String> listAdapter;
 
+    private ArrayList<String> vocThemes;
+    private ArrayAdapter<String> gridAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +66,27 @@ public class MainActivity extends AppCompatActivity {
         resultWordTextView = (TextView)findViewById(R.id.result_text_view);
         toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
         listViewPreviousWords = (ListView)findViewById(R.id.list_view_previous_words);
+        gridViewVocThemes = (GridView)findViewById(R.id.grid_view);
         context = getApplicationContext();
+
+
+        try {
+            final String[] listAssets = getResources().getAssets().list("vocFraToRus");
+            vocThemes = new ArrayList<String>();
+            for (String asset:listAssets) {
+                vocThemes.add(asset);
+                Log.d("mytag", "listAssets: " + asset);
+            }
+            gridAdapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_selectable_list_item, vocThemes);
+            gridViewVocThemes.setAdapter(gridAdapter);
+
+        } catch (IOException io) {
+            Log.d("mytag", io.toString());
+        }
+
+
+
         historyWords = new ArrayList<String>();
         listAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, historyWords) {
@@ -75,25 +103,23 @@ public class MainActivity extends AppCompatActivity {
                 String text = rawText.split(":")[1];
 
                 if (result.equals("WON")) {
-                    textView.setTextColor(Color.GREEN);
+                    textView.setTextColor(Color.rgb(0,200,50));
                     textView.setText(text);
                 } else if (result.equals("ERR"))  {
                     textView.setTextColor(Color.RED);
                     textView.setText(text);
                 }
-                if (position==historyWords.size()-1) {
+                if (position==0) {
                     textView.setAlpha(1f);
                 } else {
-                    textView.setAlpha(0.3f);
+                    textView.setAlpha(0.4f);
                 }
 
                 return view;
             }
         };
-        historyWords.add("WON: essai0");
         listAdapter.notifyDataSetChanged();
         listViewPreviousWords.setAdapter(listAdapter);
-        historyWords.add("ERR: essai1");
         listAdapter.notifyDataSetChanged();
 
         Intent intent = getIntent();
@@ -174,12 +200,12 @@ public class MainActivity extends AppCompatActivity {
         if (hasWon) {
             //resultWordTextView.setTextColor(Color.rgb(0, 255, 0));
             //resultWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
-            historyWords.add("WON: " + word.getWord() + " -> " + word.getStringTranslations());
+            historyWords.add(0,"WON: " + word.getWord() + " -> " + word.getStringTranslations());
             listAdapter.notifyDataSetChanged();
 
         } else {
             //resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
-            historyWords.add("ERR: " + word.getWord() + " -> " + word.getStringTranslations());
+            historyWords.add(0,"ERR: " + word.getWord() + " -> " + word.getStringTranslations());
             listAdapter.notifyDataSetChanged();
         }
         generateWord();

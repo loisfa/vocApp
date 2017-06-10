@@ -9,14 +9,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <TextView
-            android:text="Choose the way"
+            android:text="Choose the order"
             android:textAlignment="center"
-            android:textSize="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:textSize="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"/>
 
 
 
