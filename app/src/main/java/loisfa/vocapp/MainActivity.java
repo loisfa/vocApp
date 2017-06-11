@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listViewPreviousWords;
     private GridView gridViewVocThemes;
     private Context context;
+    private Button expandingButton;
 
     private String FILENAME_DICO_FRA_TO_RUSSIAN = "vocFraToRus.txt";
     private String PATH_TO_VOC_FOLDER = "vocFraToRus";
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private WordAndTranslations word;
     private LatinToCyrilConverter converter;
     private GameDico gameDico;
+    private boolean isDisplayThemes;
 
     private String languages;
     private boolean cyrilToLatinTextEntry;
@@ -77,9 +81,31 @@ public class MainActivity extends AppCompatActivity {
         resultWordTextView = (TextView)findViewById(R.id.result_text_view);
         toGuessWordTextView = (TextView)findViewById(R.id.guess_text_view);
         listViewPreviousWords = (ListView)findViewById(R.id.list_view_previous_words);
-        gridViewVocThemes = (GridView)findViewById(R.id.grid_view);
+        expandingButton = (Button)findViewById(R.id.expanding_button);
         context = getApplicationContext();
 
+        isDisplayThemes = true;
+        expandingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button b = (Button) view.findViewById(R.id.expanding_button);
+                b.setText(isDisplayThemes?"HIDE THEMES":"SHOW THEMES");
+                isDisplayThemes = !isDisplayThemes;
+                RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_grid_view);
+                if (isDisplayThemes == true) {
+                    layout.setVisibility(View.GONE);
+                } else {
+                    layout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        gridViewVocThemes = (GridView)findViewById(R.id.grid_view);
+        Log.d("mytag-grid", gridViewVocThemes.toString());
 
         try {
             final String[] listAssets = getResources().getAssets().list(PATH_TO_VOC_FOLDER);
@@ -112,12 +138,12 @@ public class MainActivity extends AppCompatActivity {
                     return view;
                 }
             };
+            Log.d("mytag-grid", gridAdapter.toString());
             gridViewVocThemes.setAdapter(gridAdapter);
 
         } catch (IOException io) {
             Log.d("mytag", io.toString());
         }
-
 
 
         historyWords = new ArrayList<String>();
@@ -324,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+
         return true;
     }
 
@@ -340,5 +368,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+        //return super.onSupportNavigateUp();
     }
 }

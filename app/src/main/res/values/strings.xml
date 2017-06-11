@@ -4,7 +4,8 @@
     <string name="debug_text">Your debug</string>
     <string name="result_text"></string>
     <string name="guess_text">Guess</string>
-    <string name="edit_text">Edit text</string>
+    <string name="edit_text">edit text</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_menu">MenuActivity</string>
+    <string name="text_expanding_button">Show Themes</string>
 </resources>
