@@ -10,18 +10,20 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_grid_view"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center">
 
         <GridView
             android:id="@+id/grid_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></GridView>
+            android:layout_height="wrap_content"
+            android:numColumns="2">
+        </GridView>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

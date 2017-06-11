@@ -11,13 +11,15 @@ import android.util.Log;
 // should be changed to "lang1 to lang2"
 public class DicoWordsAndTranslations {
 
+    private String theme;
     private ListWordsAndTranslations listWordsFraToRus;
     private ListWordsAndTranslations listWordsRusToFra;
 
 
-    public DicoWordsAndTranslations(String rawStringFraToRus) {
+    public DicoWordsAndTranslations(String theme, String rawStringFraToRus) {
         listWordsFraToRus = new ListWordsAndTranslations();
         listWordsRusToFra = new ListWordsAndTranslations();
+        this.theme = theme;
         buildArrayLists(rawStringFraToRus);
     }
 
@@ -55,5 +57,21 @@ public class DicoWordsAndTranslations {
         }
         return word;
     }
+
+    public String getTheme() {
+        return this.theme;
+    }
+
+    public int getSize(String languages) {
+        int size = 0;
+        if (languages.equals("fra->rus")) {
+            size = listWordsFraToRus.size();
+
+        } else if (languages.equals("rus->fra")) {
+            size = listWordsRusToFra.size();
+        }
+        return size;
+    }
+
 }
 
