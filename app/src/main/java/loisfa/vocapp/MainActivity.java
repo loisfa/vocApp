@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> listAdapter;
 
     private List<HashMap<String, String>> vocThemes;
+    private HashMap<String, Boolean> vocThemesIsActive;
     private SimpleAdapter gridAdapter;
 
 
@@ -111,13 +112,20 @@ public class MainActivity extends AppCompatActivity {
             final String[] listAssets = getResources().getAssets().list(PATH_TO_VOC_FOLDER);
             FILENAMES_VOC_FRA_TO_RUSSIAN = new ArrayList<String>();
             vocThemes = new ArrayList<HashMap<String, String>>();
+            vocThemesIsActive = new HashMap<String, Boolean>();
+            String vocThemeName;
             for (String asset:listAssets) {
                 FILENAMES_VOC_FRA_TO_RUSSIAN.add(asset);
                 HashMap item = new HashMap();
-                item.put("name", asset.split(".txt")[0]);
+                vocThemeName = asset.split(".csv")[0];
+                item.put("name", vocThemeName);
                 vocThemes.add(item);
+
+
+                HashMap itemIsActive = new HashMap();
+                vocThemesIsActive.put(vocThemeName, false);
             }
-            String[] from = new String[]{"name"};
+            String[] from = new String[]{"name", "name1", "isActive"};
             int[] id_numbers = new int[]{R.id.checkbox_voc_theme};
             gridAdapter = new SimpleAdapter(this,
                     vocThemes, R.layout.item_voc_theme, from, id_numbers) {
@@ -125,20 +133,23 @@ public class MainActivity extends AppCompatActivity {
                 public View getView (int position, View convertView, ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
                     CheckBox cb = (CheckBox) view.findViewById(R.id.checkbox_voc_theme);
-                    cb.setChecked(true);
+                    String theme = (String) cb.getText();
+                    cb.setChecked(vocThemesIsActive.get(theme));
                     cb.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             CheckBox checkBox = (CheckBox) v;
                             boolean isActive = checkBox.isChecked();
                             String theme = (String) checkBox.getText();
+                            Log.d("mytag-theme-isactive", "theme: " + theme + "; isactive: " + isActive);
                             gameDico.setActiveTheme(theme, isActive);
+                            vocThemesIsActive.put(theme, isActive);
                         }
                     });
                     return view;
                 }
             };
-            Log.d("mytag-grid", gridAdapter.toString());
+            //Log.d("mytag-grid", gridAdapter.toString());
             gridViewVocThemes.setAdapter(gridAdapter);
 
         } catch (IOException io) {
@@ -165,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     textView.setTextColor(Color.RED);
                     textView.setText(text);
                 }
-                if (position==0) {
+                if (position==historyWords.size()-1) {
                     textView.setAlpha(1f);
                 } else {
                     textView.setAlpha(0.4f);
@@ -192,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         initGame();
-        Log.d("mytag", "trying to log");
+        //Log.d("mytag", "trying to log");
 
         editText.addTextChangedListener(new TextWatcher() {
 
@@ -208,12 +219,12 @@ public class MainActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int start,
                                       int before, int count) {
 
-                Log.d("mytag", "charSequence: " + charSequence);
+                //Log.d("mytag", "charSequence: " + charSequence);
                 if (charSequence.length()!=0) {
                     CharSequence text;
                     if (cyrilToLatinTextEntry) {
-                        Log.d("mytag", "charSequence: " + charSequence);
-                        Log.d("mytag", "converter: " + converter);
+                        //Log.d("mytag", "charSequence: " + charSequence);
+                        //Log.d("mytag", "converter: " + converter);
                         text = converter.translateLatinToCyrilSequence(charSequence);
                     } else {
                         text = charSequence;
@@ -255,12 +266,11 @@ public class MainActivity extends AppCompatActivity {
         //dico = (new DicoBuilder(FILENAME_DICO_FRA_TO_RUSSIAN, this.context)).getDico();
 
         ArrayList<DicoWordsAndTranslations> listDicos = new ArrayList<>();
-        ArrayList<String> activeThemes;
         DicoWordsAndTranslations dico;
-        Log.d("mytag-FILENAMES_VOC", FILENAMES_VOC_FRA_TO_RUSSIAN.toString());
+        //Log.d("mytag-FILENAMES_VOC", FILENAMES_VOC_FRA_TO_RUSSIAN.toString());
         for (String filename:FILENAMES_VOC_FRA_TO_RUSSIAN) {
             dico = (new DicoBuilder(PATH_TO_VOC_FOLDER, filename, this.context)).getDico();
-            Log.d("tag-aleaWord", dico.getAleaWordFromTo("fra->rus").getWord());
+            //Log.d("tag-aleaWord", dico.getAleaWordFromTo("fra->rus").getWord());
             listDicos.add(dico);
         }
 
@@ -295,22 +305,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setTheme() {
-            this.theme = this.filename.split(".txt")[0];
-            Log.d("mytag-theme", this.theme);
+            this.theme = this.filename.split(".csv")[0];
+            //Log.d("mytag-theme", this.theme);
 
         }
 
         private void setRawText() throws Exception {
             TxtFileReader txtFileReader = new TxtFileReader(this.path_to_folder+"/"+this.filename, this.context);
-            Log.d("mytag-txtFileReader", "here");
+            //Log.d("mytag-txtFileReader", "here");
             this.rawText = txtFileReader.getRawText();
-            Log.d("mytag-rawText", this.rawText);
+            //Log.d("mytag-rawText", this.rawText);
 
         }
 
         private void setDico() {
             this.dico = new DicoWordsAndTranslations(this.theme, this.rawText);
-            Log.d("mytag-dico", this.dico.toString());
+            //Log.d("mytag-dico", this.dico.toString());
         }
     }
 
@@ -323,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             //resultWordTextView.setTextColor(Color.rgb(255, 0, 0));
-            historyWords.add(0, "ERR: " + word.getWord() + " -> " + word.getStringTranslations());
+            historyWords.add("ERR: " + word.getWord() + " -> " + word.getStringTranslations());
             listAdapter.notifyDataSetChanged();
         }
         generateWord();

@@ -28,7 +28,7 @@ public class GameDico {
         this.probabilitySegmentsActiveThemes = new ArrayList<>();
         for (DicoWordsAndTranslations dico: dicos) {
             this.listDicos.put(dico.getTheme(), dico);
-            this.activeThemes.add(dico.getTheme());
+            //this.activeThemes.add(dico.getTheme()); -> if all boxes are checked by default
         }
         computeProbabilitySegments();
     }
@@ -41,10 +41,13 @@ public class GameDico {
     public void setActiveTheme(String theme, boolean isActive) {
         if (isActive == true) {
             this.activeThemes.add(theme);
+            Log.d("mytag-setActiveTheme", "theme: " + theme+ " ; isActive: " + isActive);
+
         } else {
             this.activeThemes.remove(theme);
+            Log.d("mytag-setActiveTheme", "theme: " + theme+ " ; isActive: " + isActive);
         }
-        Log.d("tag-inSetActiveTheme", "");
+        //Log.d("tag-inSetActiveTheme", "");
         for (String str:activeThemes) {
             Log.d("mytag-activetheme", str);
         }
@@ -66,7 +69,7 @@ public class GameDico {
         }
         for(Proba_Theme proba_theme:this.probabilitySegmentsActiveThemes) {
             proba_theme.proba = (float) proba_theme.proba / globalSize;
-            Log.d("mytag-theme.proba", Float.toString(proba_theme.proba) );
+            //Log.d("mytag-theme.proba", Float.toString(proba_theme.proba) );
 
         }
     }

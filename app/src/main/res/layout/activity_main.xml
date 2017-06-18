@@ -20,9 +20,9 @@
     <RelativeLayout
         android:id="@+id/layout_grid_view"
         android:layout_width="fill_parent"
-        android:layout_height="0px"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <GridView
             android:id="@+id/grid_view"
