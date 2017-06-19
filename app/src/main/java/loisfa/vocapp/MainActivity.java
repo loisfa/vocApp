@@ -220,19 +220,21 @@ public class MainActivity extends AppCompatActivity {
                                       int before, int count) {
 
                 //Log.d("mytag", "charSequence: " + charSequence);
-                if (charSequence.length()!=0) {
-                    CharSequence text;
-                    if (cyrilToLatinTextEntry) {
-                        //Log.d("mytag", "charSequence: " + charSequence);
-                        //Log.d("mytag", "converter: " + converter);
-                        text = converter.translateLatinToCyrilSequence(charSequence);
-                    } else {
-                        text = charSequence;
-                    }
-                    resultWordTextView.setText(text);
-                    checksEqualsWordTranslation(text);
+                if (charSequence.toString().indexOf('\n') != -1) {
+                    gameNextWord(false);
+                    return;
                 }
 
+                CharSequence text;
+                if (cyrilToLatinTextEntry) {
+                    //Log.d("mytag", "charSequence: " + charSequence);
+                    //Log.d("mytag", "converter: " + converter);
+                    text = converter.translateLatinToCyrilSequence(charSequence);
+                } else {
+                    text = charSequence;
+                }
+                resultWordTextView.setText(text);
+                checksEqualsWordTranslation(text);
             }
         });
 
@@ -240,7 +242,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 gameNextWord(false);
-                resultWordTextView.setText("");
             }
         });
     }
@@ -328,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
         if (hasWon) {
             //resultWordTextView.setTextColor(Color.rgb(0, 255, 0));
             //resultWordTextView.setText(word.getWord() + " -> " + word.getTranslations());
-            historyWords.add(0, "WON: " + word.getWord() + " -> " + word.getStringTranslations());
+            historyWords.add("WON: " + word.getWord() + " -> " + word.getStringTranslations());
             listAdapter.notifyDataSetChanged();
 
         } else {
@@ -345,12 +346,15 @@ public class MainActivity extends AppCompatActivity {
         editText.setText("");
     }
 
-    private void checksEqualsWordTranslation(CharSequence typedWord) {
+    private boolean checksEqualsWordTranslation(CharSequence typedWord) {
         String stringTypedWord = typedWord.toString();
 
         if (word.getTranslations().contains(stringTypedWord) ||
                 word.getTranslations().contains(stringTypedWord+" ") ) {
             gameNextWord(true);
+            return true;
+        } else {
+            return false;
         }
     }
 
